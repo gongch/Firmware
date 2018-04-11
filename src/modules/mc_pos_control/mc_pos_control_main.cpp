@@ -229,7 +229,8 @@ private:
 		(ParamInt<px4::params::MPC_ALT_MODE>) _alt_mode,
 		(ParamFloat<px4::params::RC_FLT_CUTOFF>) _rc_flt_cutoff,
 		(ParamFloat<px4::params::RC_FLT_SMP_RATE>) _rc_flt_smp_rate,
-		(ParamFloat<px4::params::MPC_ACC_HOR_FLOW>) _acc_max_flow_xy
+		(ParamFloat<px4::params::MPC_ACC_HOR_FLOW>) _acc_max_flow_xy,
+		(ParamInt<px4::params::VT_TYPE>) _vtol_type
 	);
 
 
@@ -3011,8 +3012,9 @@ MulticopterPositionControl::task_main()
 			_vel_max_xy = _vel_max_xy_param.get();
 		}
 
-		/* reset setpoints and integrators VTOL in FW mode */
-		if (_vehicle_status.is_vtol && (!_vehicle_status.is_rotary_wing || _vehicle_status.in_transition_mode)) {
+		/* reset setpoints and integrators VTOL in FW mode, for tailsitters also during the transition */
+		if (_vehicle_status.is_vtol && (!_vehicle_status.is_rotary_wing || (_vehicle_status.in_transition_mode
+						&& _vtol_type.get() == vtol_type::TAILSITTER))) {
 			_reset_alt_sp = true;
 			_reset_int_xy = true;
 			_reset_int_z = true;
