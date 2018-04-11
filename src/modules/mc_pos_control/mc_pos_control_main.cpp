@@ -79,6 +79,7 @@
 #include <lib/FlightTasks/FlightTasks.hpp>
 #include "PositionControl.hpp"
 #include "Utility/ControlMath.hpp"
+#include <vtol_att_control/vtol_type.h>
 
 #define SIGMA_SINGLE_OP			0.000001f
 #define SIGMA_NORM			0.001f
@@ -2771,7 +2772,7 @@ MulticopterPositionControl::generate_attitude_setpoint()
 	/* control throttle directly if no climb rate controller is active */
 	if (!_control_mode.flag_control_climb_rate_enabled) {
 		float thr_val = throttle_curve(_manual.z, _thr_hover.get());
-		_att_sp.thrust_z =  = math::min(thr_val, _manual_thr_max.get());
+		_att_sp.thrust_z = math::min(thr_val, _manual_thr_max.get());
 
 		/* enforce minimum throttle if not landed */
 		if (!_vehicle_land_detected.landed) {
@@ -3310,7 +3311,7 @@ MulticopterPositionControl::set_idle_state()
 	matrix::Quatf q_sp = matrix::Eulerf(0.0f, 0.0f, _yaw);
 	q_sp.copyTo(_att_sp.q_d);
 	_att_sp.q_d_valid = true; //TODO: check if this flag is used anywhere
-	_att_sp.thrust = 0.0f;
+	_att_sp.thrust_z = 0.0f;
 }
 
 void
